@@ -1,10 +1,11 @@
-Welcome to Gömülü Sistem Alıştırmaları!
-==============================================================
+Gömülü Sistem Alıştırmaları!
+=======================================
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-
+   :caption: İçerik:
+   
+   giris
 
 
 Tablolar ve indeks
