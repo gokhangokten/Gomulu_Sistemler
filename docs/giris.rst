@@ -25,8 +25,98 @@ Giriş
 ================================================================================
 
    .. note:: 
-      Özellikle gömülü sistemler alanında eğitim veren mühendislik bölümlerinde **sadece** Arduino öğretilmesine karşıyım. Buradaki örneklerin aynı zamanda gerçek donanım üzerinde de test edilebilmesi için en ucuz ve kolay bulunan protorip bordu olan Arduino örneklerine de yer vereceğiz.
+      Özellikle gömülü sistemler alanında eğitim veren mühendislik bölümlerinde **sadece** Arduino öğretilmesine karşıyım. Buradaki örneklerin aynı zamanda gerçek donanım üzerinde de test edilebilmesi için en ucuz ve kolay bulunan protorip bordu olan Arduino örnekleri ile başlayacağız. 
       
    * Şemalar simulasyon odaklı verilecektir. Simulasyon için Proteus yazılımı kullanılacaktır. Proteus versiyon 8.7 SP3'dür. Proteus nereden bulunur vb. soruları lütfen sormayınız.
    * Arduino Atmega328p çipine sahip UNO veya NANO 
    * `Arduino geliştirme ortamı <https://www.arduino.cc/en/Main/Software>`_ 
+
+2.2. C Programlama Dili 
+================================================================================
+
+   Gömülü sistemlerde programlama yapmak bilgisayar ve benzeri ortamlarda programlama yapmaktan biraz farklı ve genelde daha kısıtlıdır. En önemli kısıt RAM ve ROM miktarlarındadır. Gömülü sistemlerde bare-metal programlama yapılırken dinamik hafıza yönetimi istenmez. Kod içinde kullanılan tüm hafıza bileşenleri sabit adres ve büyüklüğe sahip olacak şekilde ayarlanır. C ile yazılan bir programın derlenme ve çalışma aşamalarına bakalım. 
+   
+2.2.1. Preprocessor (Ön işlemci) 
+--------------------------------------------------------------------------------
+   
+   Preprocessor programın derlenmesinden önce çalıştırılan bir prosestir. Aslında bir nevi ön derleyici de denebilir. Preprocessor komutları diyez işareti (#) ile başlar. Preprocessor komutları kodun taşınabilirliğine büyük katkı sağlar. Yazmış olduğunuz kodları farklı mikrodenetleyicilerde kullanmak istiyorsanız donanıma özgü tanımlamaları kendi kodlarınızdan önce tanımlamanız gerekmektedir.
+   
+   .. code-block:: C
+      
+      #if defined(__ARMCC_VERSION)
+      const char *mimari = "ARM"
+      #elif defined(__AVR__)
+      const char *mimari = "AVR"      
+      #else
+      const char *mimari = "Bilinmeyen"
+      #endif
+      
+      printf("%s\n", mimari);
+   
+   Bu örnekte kullandığımız işlemciye göre mimariyi printf ile yazdırabiliriz. Eğer bu kod ARM derleyicide çalışırsa preprocessor öntanımlı ``__ARMCC_VERSION`` tanımından dolayı ``mimari`` katar dizisine ``ARM`` yazacaktır. Eğer bu kod parçağını ``ARM`` ya da ``AVR`` harici bir derleyici ile derlerseniz ``mimari`` katar dizisine ``Bilinmeyen`` yazacaktır. 
+   
+   .. code-block:: C
+      
+      #define LED_PIN  (13)
+      
+      pinMode(LED_PIN, OUTPUT);
+      
+   Bu örnekte ise preprocessor çalıştıktan sonra kod ``pinMode(13, OUTPUT);`` olarak değişecek ve derleyici değişmiş kod üzerinden derleme yapacaktır.
+   
+2.2.2. Derleyici (Compiler) 
+--------------------------------------------------------------------------------
+
+   Derleyici yazmış olduğumuz C kodlarından assembler kodlarını üreten bir yazılımdır. Eğer optimizasyon aktif ise kod optimizasyonu bu aşamada gerçekleştirilir. Her bir modül tek tek derlenerek her modüle ait obje dosyaları oluşturulur. Burada oluşturulan obje dosyaları adres bilgisi içermezler. 
+
+2.2.3. Bağlayıcı (Linker) 
+--------------------------------------------------------------------------------
+
+   Wikipedia linker için bağlayıcı terimini kullanmış. Bu aşama son aşamadır. Oluşturulan obje dosyalarından çalışabilir uygulama oluşturulur. Bağlayıcı programa adres haritası verilmesi gerekir. Adres haritasında hafıza blokları ve özellikleri belirtilir. Aşağıda STM32F103X6 mikrodenetleyicisine ait ROM ve ROM bloklarının tanımını görebilirsiniz. Aynı script dosyasında oluştulan obje dosyalarındaki blokların nerelere yerleştireleceği, sıralaması vb. bilgiler de bulunur. Her mikroişlemci mimarisinin başlangıc adres ve yerleşim bilgileri farklıdır. Bunlar genel olarak kullanılan geliştirme ortamları (IDE) veya derleyici kütüphanelerinde üreticiler tarafından hazırlanır. 
+  
+   .. highlight:: none
+
+   ::
+
+      /*
+       * Take a look in the "The GNU linker" manual, here you get
+       * the following information about the "MEMORY":
+       *
+       * "The MEMORY command describes the location and size of 
+       * blocks of memory in the target."
+       */
+      MEMORY
+      {
+        FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 0x00008000
+        RAM (rw) : ORIGIN = 0x20000000, LENGTH = 0x00002800
+      }
+
+   Bağlayıcı; derleyici tarafından oluşturulan obje dosyalarında tanımlanmış fonksiyon, değişken, vb diğer tanımları alır ve sırayla kod bloğuna yerleştirir. Fonksiyonların, değişkenlerin adresleri bu aşamada belirlenir. En son çalışmaya hazır olan program dosyası üretilir. Bu dosya direk işlemciye yazılacak kodu, hata ayıklama bilgileri, adres haritası vb. bir çok bilgiye de içerir. İşlemciye kopyalanacak dosya obje kopyalama programları ile bu dosya içerisinden çıkartılır.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
