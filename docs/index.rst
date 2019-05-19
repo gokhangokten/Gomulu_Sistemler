@@ -10,6 +10,7 @@ Gömülü Sistem Alıştırmaları
    :caption: İçindekiler:
    
    giris
+   01_7_segment
 
    
 .. toctree::
