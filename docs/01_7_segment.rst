@@ -9,8 +9,6 @@
 
    Aşağıdaki şemada ATmega328p mikrodenetleyicisine bağlanmış iki adet 7 segment LED display ve iki buton bulunmaktadır. 
 
-   https://gomulu-sistemler.readthedocs.io/tr/feature-gs-3_7-segment_ornegi_ekle/_static/code_snippets/main.c
-
    https://gomulu-sistemler.readthedocs.io/tr/feature-gs-3_7-segment_ornegi_ekle/_images/7_segment_01.PNG
 
    Örnek kod için `kod <_static/code_snippets/main.c>`_ 
